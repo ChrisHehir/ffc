@@ -1,60 +1,65 @@
-```css
 body {
     font-family: Arial, sans-serif;
+    line-height: 1.6;
     margin: 0;
     padding: 0;
-    background-color: #ffffff;
-    color: #000000;
-}
-
-header {
-    background-color: #cc0000;
-    color: #ffffff;
-    text-align: center;
-    padding: 1em;
-}
-
-h1, h2 {
-    margin: 0.5em 0;
-}
-
-main {
-    padding: 1em;
-}
-
-#match-list li {
-    margin: 0.5em 0;
-    padding: 0.5em;
-    background-color: #f4f4f4;
-    border: 1px solid #ccc;
-    list-style: none;
-}
-
-form {
-    display: flex;
-    flex-direction: column;
-}
-
-label, input, select, button {
-    margin: 0.5em 0;
-}
-
-button {
-    background-color: #cc0000;
-    color: #ffffff;
-    border: none;
-    padding: 0.5em;
-    cursor: pointer;
-}
-
-button:hover {
-    background-color: #990000;
-}
-
-#attendance-summary {
-    margin-top: 1em;
-    padding: 1em;
     background-color: #f9f9f9;
+    color: #333;
+  }
+  
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  header {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  header h1 {
+    font-size: 1.8rem;
+    margin: 0;
+  }
+  
+  header p {
+    font-size: 1rem;
+    color: #555;
+  }
+  
+  .match {
+    margin-bottom: 30px;
+    padding: 15px;
+    background: white;
     border: 1px solid #ddd;
-}
-```
+    border-radius: 5px;
+  }
+  
+  .match h2 {
+    font-size: 1.4rem;
+    margin-bottom: 10px;
+  }
+  
+  button {
+    margin-right: 5px;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+  }
+  
+  button:hover {
+    background-color: #ddd;
+  }
+  
+  ul {
+    list-style: none;
+    padding: 0;
+  }
+  
+  ul li {
+    font-size: 0.9rem;
+    margin: 2px 0;
+  }
+  
