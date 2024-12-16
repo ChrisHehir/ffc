@@ -1,0 +1,44 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fulham FC Match Attendance</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Fulham FC Match Attendance</h1>
+    </header>
+    <main>
+        <section id="upcoming-matches">
+            <h2>Upcoming Matches</h2>
+            <ul id="match-list">
+                <!-- Matches will be dynamically added here -->
+            </ul>
+        </section>
+        <section id="rsvp-section">
+            <h2>RSVP</h2>
+            <form id="rsvp-form">
+                <label for="name">Name:</label>
+                <input type="text" id="name" required>
+
+                <label for="status">Status:</label>
+                <select id="status">
+                    <option value="yes">Yes</option>
+                    <option value="no">No</option>
+                    <option value="maybe">Maybe</option>
+                </select>
+
+                <button type="submit">Submit</button>
+            </form>
+            <div id="attendance-summary">
+                <!-- RSVP summaries will appear here -->
+            </div>
+        </section>
+    </main>
+    <script src="script.js"></script>
+</body>
+</html>
+```
