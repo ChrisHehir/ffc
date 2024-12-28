@@ -1,77 +1,62 @@
+// Games data
 const games = [
-  { id: 1, opponent: "Southampton", date: "22nd Dec (Sunday)", time: "2:00 PM" },
-  { id: 2, opponent: "Chelsea", date: "26th Dec (Thursday)", time: "3:00 PM" },
-  { id: 3, opponent: "Bournemouth", date: "29th Dec (Sunday)", time: "3:00 PM" },
-  { id: 4, opponent: "Ipswich", date: "5th Jan (Sunday)", time: "2:00 PM" },
-  { id: 5, opponent: "West Ham", date: "14th Jan (Tuesday)", time: "7:30 PM" },
+  { id: 1, title: "Fulham vs Bournemouth", date: "29th Dec, Sunday 3pm" },
+  { id: 2, title: "Fulham vs Ipswich", date: "5th Jan, Sunday 2pm" },
+  { id: 3, title: "Westham vs Fulham", date: "14th Jan, Tuesday 7:30pm" },
+  { id: 4, title: "Leicester vs Fulham", date: "18th Jan, Saturday 3pm" },
+  { id: 5, title: "Fulham vs Manchester United", date: "26th Jan, Sunday 7pm" },
+  { id: 6, title: "Newcastle vs Fulham", date: "1st Feb, Saturday 3pm" },
+  { id: 7, title: "Fulham vs Nottingham Forest", date: "15th Feb, Saturday 3pm" },
+  { id: 8, title: "Fulham vs Crystal Palace", date: "22nd Feb, Saturday 3pm" },
 ];
 
-const rsvps = JSON.parse(localStorage.getItem("rsvps")) || {};
+// Persisting RSVP data
+const rsvpData = JSON.parse(localStorage.getItem("rsvpData")) || {};
 
-function saveRSVPs() {
-  localStorage.setItem("rsvps", JSON.stringify(rsvps));
-}
+// Save data to localStorage
+const saveData = () => {
+  localStorage.setItem("rsvpData", JSON.stringify(rsvpData));
+};
 
-function renderMatches() {
-  const matchesContainer = document.getElementById("matches");
-  matchesContainer.innerHTML = "";
-
+// Load games and RSVP sections
+const loadGames = () => {
+  const gamesContainer = document.getElementById("games");
   games.forEach((game) => {
-    const matchDiv = document.createElement("div");
-    matchDiv.classList.add("match");
-
-    matchDiv.innerHTML = `
-      <h2>${game.opponent} - ${game.date} at ${game.time}</h2>
-      <div>
-        <button onclick="handleRSVP(${game.id}, 'yes')">Yes</button>
-        <button onclick="handleRSVP(${game.id}, 'no')">No</button>
-        <button onclick="handleRSVP(${game.id}, 'maybe')">Maybe</button>
+    const gameSection = document.createElement("div");
+    gameSection.classList.add("game");
+    gameSection.innerHTML = `
+      <h2>${game.title}</h2>
+      <p>${game.date}</p>
+      <div class="rsvp" data-game-id="${game.id}">
+        <button onclick="handleRSVP(${game.id}, 'Yes')">Yes</button>
+        <button onclick="handleRSVP(${game.id}, 'No')">No</button>
+        <button onclick="handleRSVP(${game.id}, 'Maybe')">Maybe</button>
       </div>
-      <div>
-        <h3>RSVP List:</h3>
-        <ul id="yes-${game.id}"><strong>Yes:</strong></ul>
-        <ul id="no-${game.id}"><strong>No:</strong></ul>
-        <ul id="maybe-${game.id}"><strong>Maybe:</strong></ul>
+      <div class="attendees" id="attendees-${game.id}">
+        ${renderAttendees(game.id)}
       </div>
     `;
-
-    matchesContainer.appendChild(matchDiv);
-    renderRSVPs(game.id);
+    gamesContainer.appendChild(gameSection);
   });
-}
+};
 
-function handleRSVP(matchId, response) {
+// Render attendees
+const renderAttendees = (gameId) => {
+  const attendees = rsvpData[gameId] || {};
+  return Object.entries(attendees)
+    .map(([name, status]) => `${name}: ${status}`)
+    .join("<br>") || "No RSVPs yet.";
+};
+
+// Handle RSVP
+const handleRSVP = (gameId, status) => {
   const name = prompt("Enter your name:");
   if (!name) return;
+  if (!rsvpData[gameId]) rsvpData[gameId] = {};
+  rsvpData[gameId][name] = status;
+  saveData();
+  document.getElementById(`attendees-${gameId}`).innerHTML = renderAttendees(gameId);
+};
 
-  if (!rsvps[matchId]) {
-    rsvps[matchId] = { yes: [], no: [], maybe: [] };
-  }
-
-  // Remove the name from any existing category
-  ["yes", "no", "maybe"].forEach((category) => {
-    const index = rsvps[matchId][category].indexOf(name);
-    if (index !== -1) rsvps[matchId][category].splice(index, 1);
-  });
-
-  // Add the name to the new category
-  rsvps[matchId][response].push(name);
-
-  saveRSVPs();
-  renderRSVPs(matchId);
-}
-
-function renderRSVPs(matchId) {
-  ["yes", "no", "maybe"].forEach((category) => {
-    const list = document.getElementById(`${category}-${matchId}`);
-    list.innerHTML = `<strong>${category.charAt(0).toUpperCase() + category.slice(1)}:</strong>`;
-    rsvps[matchId]?.[category]?.forEach((name) => {
-      const li = document.createElement("li");
-      li.textContent = name;
-      list.appendChild(li);
-    });
-  });
-}
-
-// Render the matches and RSVPs on page load
-renderMatches();
+// Load games on page load
+document.addEventListener("DOMContentLoaded", loadGames);
