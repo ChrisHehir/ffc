@@ -3,22 +3,123 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Fulham FC Game Attendance</title>
-  <link rel="stylesheet" href="style.css">
+  <title>Fulham RSVP Tracker</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    h1 {
+      text-align: center;
+      background-color: #4caf50;
+      color: white;
+      padding: 1em 0;
+    }
+    .game {
+      border: 1px solid #ddd;
+      margin: 1em;
+      padding: 1em;
+      border-radius: 8px;
+      box-shadow: 2px 2px 6px #ccc;
+    }
+    .game-header {
+      font-weight: bold;
+    }
+    .buttons {
+      margin-top: 10px;
+    }
+    .buttons button {
+      margin-right: 10px;
+    }
+    .rsvp-list {
+      margin-top: 10px;
+    }
+  </style>
+  <!-- Add Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.17.2/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.17.2/firebase-database.js"></script>
 </head>
-<!-- Trigger rebuild -->
 <body>
-  <header>
-    <h1>Fulham FC Game Attendance</h1>
-    <p>Track who’s attending upcoming Fulham FC matches.</p>
-  </header>
+  <h1>Fulham Game RSVP Tracker</h1>
+  <div id="games"></div>
+  <script>
+    // Replace with your Firebase config
+const firebaseConfig = {
+  apiKey: "AIzaSyALpCHGRkO_YtfN2FB54FcDHSWN-3HblVo",
+  authDomain: "fulham-games-2.firebaseapp.com",
+  projectId: "fulham-games-2",
+  storageBucket: "fulham-games-2.firebasestorage.app",
+  messagingSenderId: "582227710512",
+  appId: "1:582227710512:web:850a0ece0b80d103d9d3f5"
+};
 
-  <main>
-    <section id="games">
-      <!-- Games will be dynamically loaded here -->
-    </section>
-  </main>
+    // Initialize Firebase
+    const app = firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
 
-  <script src="script.js"></script>
+    // Games list
+    const games = [
+      { id: 1, match: "Fulham vs Bournemouth", date: "29th Dec, Sunday, 3pm", location: "Craven Cottage" },
+      { id: 2, match: "Fulham vs Ipswich", date: "5th Jan, Sunday, 2pm", location: "Craven Cottage" },
+      { id: 3, match: "West Ham vs Fulham", date: "14th Jan, Tuesday, 7.30pm", location: "London Stadium" },
+      { id: 4, match: "Leicester vs Fulham", date: "18th Jan, Saturday, 3pm", location: "King Power Stadium" },
+      { id: 5, match: "Fulham vs Manchester United", date: "26th Jan, Sunday, 7pm", location: "Craven Cottage" },
+      { id: 6, match: "Newcastle vs Fulham", date: "1st Feb, Saturday, 3pm", location: "St James' Park" },
+      { id: 7, match: "Fulham vs Nottingham Forest", date: "15th Feb, Saturday, 3pm", location: "Craven Cottage" },
+      { id: 8, match: "Fulham vs Crystal Palace", date: "22nd Feb, Saturday, 3pm", location: "Craven Cottage" },
+      { id: 9, match: "Wolverhampton Wanderers v Fulham", date: "25th Feb, Tuesday, 19:45", location: "Molineux Stadium" },
+      { id: 10, match: "Brighton and Hove Albion v Fulham", date: "8th Mar, Saturday, 15:00", location: "American Express Stadium" },
+      { id: 11, match: "Fulham v Tottenham Hotspur", date: "15th Mar, Saturday, 15:00", location: "Craven Cottage" },
+      { id: 12, match: "Arsenal v Fulham", date: "1st Apr, Tuesday, 19:45", location: "Emirates Stadium" },
+      { id: 13, match: "Fulham v Liverpool", date: "5th Apr, Saturday, 15:00", location: "Craven Cottage" },
+    ];
+
+    // Create UI for games
+    const gamesContainer = document.getElementById("games");
+
+    games.forEach((game) => {
+      const gameDiv = document.createElement("div");
+      gameDiv.className = "game";
+      gameDiv.innerHTML = `
+        <div class="game-header">${game.match} - ${game.date} @ ${game.location}</div>
+        <div class="buttons">
+          <button onclick="rsvp(${game.id}, 'yes')">Yes</button>
+          <button onclick="rsvp(${game.id}, 'no')">No</button>
+          <button onclick="rsvp(${game.id}, 'maybe')">Maybe</button>
+        </div>
+        <div class="rsvp-list" id="rsvp-${game.id}">Loading...</div>
+      `;
+      gamesContainer.appendChild(gameDiv);
+
+      // Fetch RSVPs
+      const rsvpRef = db.ref(`rsvps/${game.id}`);
+      rsvpRef.on("value", (snapshot) => {
+        const rsvps = snapshot.val() || { yes: [], no: [], maybe: [] };
+        const rsvpList = document.getElementById(`rsvp-${game.id}`);
+        rsvpList.innerHTML = `
+          <div>Yes: ${rsvps.yes.join(", ") || "No one yet"}</div>
+          <div>No: ${rsvps.no.join(", ") || "No one yet"}</div>
+          <div>Maybe: ${rsvps.maybe.join(", ") || "No one yet"}</div>
+        `;
+      });
+    });
+
+    // Handle RSVP
+    function rsvp(gameId, response) {
+      const name = prompt("Enter your name:");
+      if (!name) return;
+
+      const rsvpRef = db.ref(`rsvps/${gameId}`);
+      rsvpRef.once("value", (snapshot) => {
+        const rsvps = snapshot.val() || { yes: [], no: [], maybe: [] };
+        Object.keys(rsvps).forEach((key) => {
+          rsvps[key] = rsvps[key].filter((n) => n !== name); // Remove name from all lists
+        });
+        rsvps[response].push(name); // Add to selected list
+        rsvpRef.set(rsvps);
+      });
+    }
+  </script>
 </body>
 </html>
